@@ -1,0 +1,10 @@
+repos:
+  - repo: local
+    hooks:
+      - id: uv-task-check
+        name: Run uv task check
+        entry: uv run task check
+        language: system
+        pass_filenames: false
+        always-run: false
+        files: \.py$
