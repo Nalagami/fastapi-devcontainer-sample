@@ -13,7 +13,7 @@ async def read_root() -> dict[str, str]:
 
 
 @app.get("/health")
-async def health_check() -> JSONResponse:
+async def health_check():
     """Health check endpoint."""
     return JSONResponse(status_code=200, content={"status": "ok"})
 

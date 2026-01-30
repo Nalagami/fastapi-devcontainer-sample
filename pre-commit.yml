@@ -6,5 +6,5 @@ repos:
         entry: uv run task check
         language: system
         pass_filenames: false
-        always-run: false
-        files: \.py$
+        always_run: true
+        stages: [commit]
