@@ -62,5 +62,6 @@
       "label": "FastAPI",
       "onAutoForward": "notify"
     }
-  }
+  },
+  "postCreateCommand": "pre-commit install"
 }
