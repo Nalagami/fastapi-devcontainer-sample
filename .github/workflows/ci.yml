@@ -1,77 +1,73 @@
 name: CI
 
 on:
-    push:
-        paths:
-            - "**.py"
-            - ".github/workflows/ci.yml"
-            - "pyproject.toml"
-    pull_request:
-        paths:
-            - "**.py"
-            - ".github/workflows/ci.yml"
-            - "pyproject.toml"
+  pull_request:
+    paths:
+      - "**.py"
+      - ".github/workflows/ci.yml"
+      - "pyproject.toml"
 
 jobs:
-    checks:
-        runs-on: ubuntu-latest
-        timeout-minutes: 15
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
 
-        steps:
-            - uses: actions/checkout@v6
+    steps:
+      - uses: actions/checkout@v6
 
-            - name: Set up Python
-              uses: actions/setup-python@v6
-              with:
-                  python-version: "3.13"
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
 
-            - name: Install uv
-              uses: astral-sh/setup-uv@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
 
-            - name: Install dependencies
-              run: uv sync --all-extras
+      - name: Install dependencies
+        run: uv sync --all-extras
 
-            - name: Format check (ruff)
-              id: format-check
-              continue-on-error: true
-              run: uv run task fmt-check
+      - name: Format check (ruff)
+        id: format-check
+        continue-on-error: true
+        run: uv run task fmt-check
 
-            - name: Lint check (ruff)
-              id: lint-check
-              continue-on-error: true
-              run: uv run task lint-check
+      - name: Lint check (ruff)
+        id: lint-check
+        continue-on-error: true
+        run: uv run task lint-check
 
-            - name: Type check (mypy)
-              id: type-check
-              continue-on-error: true
-              run: uv run task type
+      - name: Type check (mypy)
+        id: type-check
+        continue-on-error: true
+        run: uv run task type
 
-            - name: Test with coverage (pytest)
-              id: test
-              continue-on-error: true
-              run: uv run pytest --cov=. --cov-report=term-missing --cov-report=json --cov-report=xml
+      - name: Test with coverage (pytest)
+        id: test
+        continue-on-error: true
+        run: uv run pytest --cov=. --cov-report=term-missing --cov-report=json --cov-report=xml
 
-            - name: Upload coverage to Codecov
-              if: success() || failure()
-              uses: codecov/codecov-action@v4
-              with:
-                  files: ./coverage.xml
-                  flags: unittests
-                  name: codecov-umbrella
-                  fail_ci_if_error: true
+      - name: Upload coverage to Codecov
+        if: success() || failure()
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true
 
-            - name: Check results
-              if: always()
-              run: |
-                  echo "## CI Results" >> $GITHUB_STEP_SUMMARY
-                  echo "" >> $GITHUB_STEP_SUMMARY
-                  echo "| Check | Result |" >> $GITHUB_STEP_SUMMARY
-                  echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-                  echo "| Format check (ruff) | ${{ steps.format-check.outcome }} |" >> $GITHUB_STEP_SUMMARY
-                  echo "| Lint check (ruff) | ${{ steps.lint-check.outcome }} |" >> $GITHUB_STEP_SUMMARY
-                  echo "| Type check (mypy) | ${{ steps.type-check.outcome }} |" >> $GITHUB_STEP_SUMMARY
-                  echo "| Test with coverage (pytest) | ${{ steps.test.outcome }} |" >> $GITHUB_STEP_SUMMARY
+      - name: Check results
+        if: always()
+        run: |
+          echo "## CI Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Result |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Format check (ruff) | ${{ steps.format-check.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint check (ruff) | ${{ steps.lint-check.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Type check (mypy) | ${{ steps.type-check.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Test with coverage (pytest) | ${{ steps.test.outcome }} |" >> $GITHUB_STEP_SUMMARY
 
-                  if [ "${{ job.status }}" == "failure" ]; then
-                    exit 1
-                  fi
+          if [ "${{ job.status }}" == "failure" ]; then
+            exit 1
+          fi
