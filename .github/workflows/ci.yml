@@ -7,6 +7,10 @@ on:
       - ".github/workflows/ci.yml"
       - "pyproject.toml"
 
+permissions:
+  pull-requests: write
+  contents: read
+
 jobs:
   checks:
     runs-on: ubuntu-latest
