@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  pull_request:
+    paths:
+      - "**.py"
+      - ".github/workflows/ci.yml"
+      - "pyproject.toml"
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Format check (ruff)
+        id: format-check
+        continue-on-error: true
+        run: uv run task fmt-check
+
+      - name: Lint check (ruff)
+        id: lint-check
+        continue-on-error: true
+        run: uv run task lint-check
+
+      - name: Type check (mypy)
+        id: type-check
+        continue-on-error: true
+        run: uv run task type
+
+      - name: Test with coverage (pytest)
+        id: test
+        continue-on-error: true
+        env:
+          COVERAGE_FILE: .coverage
+        run: uv run pytest --cov=. --cov-report=term-missing --cov-report=json --cov-report=xml
+
+      - name: Post coverage to PR
+        id: coverage_comment
+        continue-on-error: true
+        uses: py-cov-action/python-coverage-comment-action@v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Store Pull Request comment to be posted
+        uses: actions/upload-artifact@v4
+        if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
+        with:
+          # If you use a different name, update COMMENT_ARTIFACT_NAME accordingly
+          name: python-coverage-comment-action
+          # If you use a different name, update COMMENT_FILENAME accordingly
+          path: python-coverage-comment-action.txt
+
+      - name: Check results
+        if: always()
+        run: |
+          echo "## CI Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Result |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Format check (ruff) | ${{ steps.format-check.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint check (ruff) | ${{ steps.lint-check.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Type check (mypy) | ${{ steps.type-check.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Test with coverage (pytest) | ${{ steps.test.outcome }} |" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ job.status }}" == "failure" ]; then
+            exit 1
+          fi
