@@ -44,6 +44,8 @@ jobs:
       - name: Test with coverage (pytest)
         id: test
         continue-on-error: true
+        env:
+          COVERAGE_FILE: .coverage
         run: uv run pytest --cov=. --cov-report=term-missing --cov-report=json --cov-report=xml
 
       - name: Post coverage to PR
