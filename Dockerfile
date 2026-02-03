@@ -4,13 +4,24 @@
 # ============================================================================
 FROM python:3.13-slim AS development
 
+ARG TERRAFORM_VERSION=1.7.0
+
 WORKDIR /workspace
 
 # 開発ツールをインストール
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     build-essential \
+    wget \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
+
+# Terraform をインストール
+RUN wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    mv terraform /usr/local/bin/ && \
+    rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    terraform version
 
 # uv をインストール
 RUN pip install --no-cache-dir uv
