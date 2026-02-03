@@ -4,13 +4,32 @@
 # ============================================================================
 FROM python:3.13-slim AS development
 
+ARG TERRAFORM_VERSION=1.7.0
+
 WORKDIR /workspace
 
 # 開発ツールをインストール
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     build-essential \
+    wget \
+    unzip \
+    locales \
     && rm -rf /var/lib/apt/lists/*
+
+# 日本語ロケールを設定
+RUN echo "ja_JP.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
+
+ENV LANG=ja_JP.UTF-8
+ENV LANGUAGE=ja_JP:ja
+ENV LC_ALL=ja_JP.UTF-8
+
+# Terraform をインストール
+RUN wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    mv terraform /usr/local/bin/ && \
+    rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    terraform version
 
 # uv をインストール
 RUN pip install --no-cache-dir uv

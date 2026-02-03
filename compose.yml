@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
+      args:
+        TERRAFORM_VERSION: 1.7.0
     container_name: fastapi-dev
     volumes:
       - .:/workspace
@@ -23,6 +25,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: production
+      args:
+        TERRAFORM_VERSION: 1.7.0
     container_name: fastapi-prod
     ports:
       - "8001:8000"
