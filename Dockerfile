@@ -14,7 +14,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     wget \
     unzip \
+    locales \
     && rm -rf /var/lib/apt/lists/*
+
+# 日本語ロケールを設定
+RUN echo "ja_JP.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
+
+ENV LANG=ja_JP.UTF-8
+ENV LANGUAGE=ja_JP:ja
+ENV LC_ALL=ja_JP.UTF-8
 
 # Terraform をインストール
 RUN wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
