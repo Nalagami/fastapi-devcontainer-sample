@@ -45,7 +45,13 @@
         "[yaml]": {
           "editor.defaultFormatter": "redhat.vscode-yaml",
           "editor.codeActionsOnSave": {
-            "source.fixAll": true // Lint修正
+            "source.fixAll": "explicit"
+          }
+        },
+        "[yml]": {
+          "editor.defaultFormatter": "redhat.vscode-yaml",
+          "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit"
           }
         },
         "[terraform]": {
@@ -66,5 +72,6 @@
       "onAutoForward": "notify"
     }
   },
-  "postCreateCommand": "pre-commit install"
+  "postCreateCommand": "pre-commit install",
+  "postStartCommand": "uvicorn main:app --host 0.0.0.0 --port 3100 --reload"
 }
