@@ -45,7 +45,13 @@
         "[yaml]": {
           "editor.defaultFormatter": "redhat.vscode-yaml",
           "editor.codeActionsOnSave": {
-            "source.fixAll": true // Lint修正
+            "source.fixAll": "explicit"
+          }
+        },
+        "[yml]": {
+          "editor.defaultFormatter": "redhat.vscode-yaml",
+          "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit"
           }
         },
         "[terraform]": {
