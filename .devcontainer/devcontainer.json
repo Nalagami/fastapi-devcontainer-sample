@@ -66,5 +66,6 @@
       "onAutoForward": "notify"
     }
   },
-  "postCreateCommand": "pre-commit install"
+  "postCreateCommand": "pre-commit install",
+  "postStartCommand": "uvicorn main:app --host 0.0.0.0 --port 3100 --reload"
 }
