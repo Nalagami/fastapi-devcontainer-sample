@@ -3,22 +3,35 @@
   "dockerComposeFile": "../compose.yml",
   "service": "dev",
   "workspaceFolder": "/workspace",
+  "features": {
+    // Enable Docker CLI inside the container
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    // Enable Claude Code feature
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
+  },
   "customizations": {
     "vscode": {
       "extensions": [
+        // Claude Code extension
+        "anthropic.claude-code",
+        // Python development extensions
         "ms-python.python",
         "ms-python.vscode-pylance",
         "charliermarsh.ruff",
         "ms-python.debugpy",
         "ms-ceintl.vscode-language-pack-ja",
+        "ms-python.mypy-type-checker",
+        // Terraform extension
+        "hashicorp.terraform",
+        // GitHub extensions
+        "GitHub.vscode-pull-request-github",
         "GitHub.copilot",
         "GitHub.vscode-github-actions",
-        "vscode-icons-team.vscode-icons",
-        "hashicorp.terraform",
-        "ms-python.mypy-type-checker",
-        "tamasfe.even-better-toml",
+        // Other useful extensions
+        "redhat.vscode-yaml",
         "esbenp.prettier-vscode",
-        "redhat.vscode-yaml"
+        "tamasfe.even-better-toml"
       ],
       "settings": {
         "python.defaultInterpreterPath": "${containerEnv:VIRTUAL_ENV}/bin/python",
@@ -67,13 +80,16 @@
       }
     }
   },
-  "forwardPorts": [8000],
   "portsAttributes": {
     "8000": {
       "label": "FastAPI",
       "onAutoForward": "notify"
     }
   },
+  "mounts": [
+    // Bind mount for Claude API key configuration
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.claude,target=/root/.claude,type=bind,consistency=cached"
+  ],
   "postCreateCommand": "pre-commit install",
-  "postStartCommand": "uvicorn main:app --host 0.0.0.0 --port 3100 --reload"
+  "postStartCommand": "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 }

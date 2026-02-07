@@ -1,21 +1,17 @@
-version: "3.8"
-
 services:
   dev:
+    container_name: fastapi-devcontainer
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: app/Dockerfile
       target: development
-      args:
-        TERRAFORM_VERSION: 1.7.0
-    container_name: fastapi-dev
     volumes:
-      - .:/workspace
-      - /workspace/.venv
+      - ./:/workspace:cached
+      - venv:/workspace/.venv
     ports:
       - "8000:8000"
-    environment:
-      PYTHONUNBUFFERED: "1"
     stdin_open: true
     tty: true
 
+volumes:
+  venv:
