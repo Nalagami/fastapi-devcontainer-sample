@@ -19,9 +19,9 @@ dev = [
 [tool.taskipy.tasks]
 fmt = "ruff format ."
 fmt-check = "ruff format . --check"
-lint = "ruff check . --fix"
-lint-check = "ruff check ."
-type = "mypy main.py tests/"
+lint = "ruff check ./app --fix"
+lint-check = "ruff check ./app"
+type = "mypy ./app"
 test = "pytest"
 test-unit = "pytest tests/unit"
 test-integration = "pytest tests/integration"
