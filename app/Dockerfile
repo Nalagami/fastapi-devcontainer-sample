@@ -14,16 +14,12 @@ FROM base AS development
 # ENV LANG=ja_JP.UTF-8
 # ENV LANGUAGE=ja_JP:ja
 # ENV LC_ALL=ja_JP.UTF-8
-WORKDIR /app
-
-ENV PATH="/app/.venv/bin:$PATH"
+WORKDIR /workspace
+ENV PATH="/workspace/.venv/bin:$PATH"
 
 RUN pip install --no-cache-dir uv
 COPY ../pyproject.toml .
-RUN uv sync
-COPY ./app/ /app
-
-CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "main:app"]
+RUN uv sync --extra dev
 
 # --- 本番環境用 ---
 FROM base AS production

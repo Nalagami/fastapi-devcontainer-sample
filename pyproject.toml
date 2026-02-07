@@ -3,7 +3,11 @@ name = "fastapi-app"
 version = "0.1.0"
 description = "FastAPI development environment"
 requires-python = ">=3.13"
-dependencies = ["fastapi>=0.109.0", "uvicorn[standard]>=0.27.0", "gunicorn>=23.0.0"]
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "gunicorn>=23.0.0",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -14,6 +18,7 @@ dev = [
     "mypy>=1.8.0",
     "taskipy>=1.12.0",
     "pre-commit>=3.4.0",
+    "httpx>=0.25.0",
 ]
 
 [tool.taskipy.tasks]
@@ -22,7 +27,7 @@ fmt-check = "ruff format . --check"
 lint = "ruff check ./app --fix"
 lint-check = "ruff check ./app"
 type = "mypy ./app"
-test = "pytest"
+test = "pytest tests"
 test-unit = "pytest tests/unit"
 test-integration = "pytest tests/integration"
 check = "task fmt-check && task lint-check && task type && task test"
