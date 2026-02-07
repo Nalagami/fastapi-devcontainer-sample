@@ -20,3 +20,4 @@ htmlcov/
 .env.local
 README.md
 tests/
+Dockerfile
