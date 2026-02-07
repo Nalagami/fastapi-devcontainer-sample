@@ -8,14 +8,19 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 # --- 開発環境用 ---
 FROM base AS development
-# 日本語ロケールを設定
-# TODO: devcontainer に移植
-# RUN echo "ja_JP.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
-# ENV LANG=ja_JP.UTF-8
-# ENV LANGUAGE=ja_JP:ja
-# ENV LC_ALL=ja_JP.UTF-8
 WORKDIR /workspace
+
 ENV PATH="/workspace/.venv/bin:$PATH"
+
+# 日本語ロケールを設定
+RUN apt-get update && apt-get install -y locales \
+    && sed -i '/ja_JP.UTF-8/s/^# //g' /etc/locale.gen \
+    && locale-gen \
+    && update-locale LANG=ja_JP.UTF-8
+RUN echo "ja_JP.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
+ENV LANG=ja_JP.UTF-8
+ENV LANGUAGE=ja_JP:ja
+ENV LC_ALL=ja_JP.UTF-8
 
 RUN pip install --no-cache-dir uv
 COPY ../pyproject.toml .
