@@ -88,7 +88,8 @@
   },
   "mounts": [
     // Bind mount for Claude API key configuration
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.claude,target=/root/.claude,type=bind,consistency=cached"
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.claude,target=/root/.claude,type=bind,consistency=cached",
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws,target=/root/.aws,type=bind,consistency=cached"
   ],
   "postCreateCommand": "pre-commit install",
   "postStartCommand": "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
