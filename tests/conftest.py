@@ -1,36 +1,44 @@
 """Shared test configuration."""
 
-from typing import Generator
+from typing import AsyncGenerator
 
 import pytest
-from sqlalchemy import create_engine, event
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    AsyncEngine,
+    create_async_engine,
+    async_sessionmaker,
+)
+
 
 from app.models.base import Base
 
 
 @pytest.fixture(scope="session")
-def test_engine():
+async def test_async_engine() -> AsyncGenerator[AsyncEngine, None]:
     """Create an in-memory SQLite engine for testing."""
-    engine = create_engine(
-        "sqlite:///:memory:",
+    async_engine = create_async_engine(
+        "sqlite+aiosqlite:///:memory:",
         connect_args={"check_same_thread": False},
     )
-    Base.metadata.create_all(bind=engine)
-    yield engine
+    async with async_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield async_engine
+    await async_engine.dispose()
 
 
 @pytest.fixture(scope="function")
-def test_db_session(test_engine) -> Generator[Session, None, None]:
-    """Create a new database session for each test."""
-    connection = test_engine.connect()
-    transaction = connection.begin()
+async def test_db_session(test_async_engine: AsyncEngine) -> AsyncGenerator[AsyncSession, None]:
+    """Create a new database session for each test with clean state."""
+    # Reset database before each test
+    async with test_async_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
 
-    session = sessionmaker(bind=connection, expire_on_commit=False)()
-
-    yield session
-
-    session.rollback()
-    session.close()
-    transaction.rollback()
-    connection.close()
+    async_session_maker = async_sessionmaker(
+        test_async_engine, class_=AsyncSession, expire_on_commit=False
+    )
+    async with async_session_maker() as session:
+        yield session
+        # Cleanup after test
+        await session.rollback()

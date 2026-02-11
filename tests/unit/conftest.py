@@ -11,6 +11,6 @@ def setup_unit_test_db(test_db_session, monkeypatch) -> None:
     import app.crud.task
 
     # Replace SessionLocal with test_db_session
-    mock_session_local = MagicMock(return_value=test_db_session)
-    monkeypatch.setattr(app.models.base, "SessionLocal", mock_session_local)
-    monkeypatch.setattr(app.crud.task, "SessionLocal", mock_session_local)
+    # mock_session_local = MagicMock(return_value=test_db_session)
+    # monkeypatch.setattr(app.models.base, "SessionLocal", mock_session_local)
+    # monkeypatch.setattr(app.crud.task, "SessionLocal", mock_session_local)

@@ -1,50 +1,46 @@
 """CRUD operations for Task model."""
 
+from collections.abc import Sequence
 from datetime import datetime
 
-from app.models.base import SessionLocal
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.task import Task
 
 
-def create_task(name: str, deadline: datetime) -> Task:
+async def create_task(db: AsyncSession, name: str, deadline: datetime) -> Task:
     """Create a new task."""
-    db = SessionLocal()
     db_task = Task(name=name, deadline=deadline, is_completed=False)
     db.add(db_task)
-    db.commit()
-    db.refresh(db_task)
-    db.close()
+    await db.commit()
+    await db.refresh(db_task)
     return db_task
 
 
-def get_task(task_id: int) -> Task | None:
+async def get_task(db: AsyncSession, task_id: int) -> Task | None:
     """Get a task by ID."""
-    db = SessionLocal()
-    task = db.query(Task).filter(Task.id == task_id).first()
-    db.close()
-    return task
+    task = await db.execute(select(Task).where(Task.id == task_id))
+    return task.scalar_one_or_none()
 
 
-def get_all_tasks() -> list[Task]:
+async def get_all_tasks(db: AsyncSession) -> Sequence[Task]:
     """Get all tasks."""
-    db = SessionLocal()
-    tasks = db.query(Task).all()
-    db.close()
-    return tasks
+    tasks = await db.execute(select(Task))
+    return tasks.scalars().all()
 
 
-def update_task(
+async def update_task(
+    db: AsyncSession,
     task_id: int,
     name: str | None = None,
     deadline: datetime | None = None,
     is_completed: bool | None = None,
 ) -> Task | None:
     """Update a task."""
-    db = SessionLocal()
-    task = db.query(Task).filter(Task.id == task_id).first()
+    task = await get_task(db=db, task_id=task_id)
 
     if task is None:
-        db.close()
         return None
 
     if name is not None:
@@ -54,19 +50,17 @@ def update_task(
     if is_completed is not None:
         task.is_completed = is_completed
 
-    db.commit()
-    db.refresh(task)
-    db.close()
+    await db.commit()
+    await db.refresh(task)
     return task
 
 
-def delete_task(task_id: int) -> None:
+async def delete_task(db: AsyncSession, task_id: int) -> None:
     """Delete a task."""
-    db = SessionLocal()
-    task = db.query(Task).filter(Task.id == task_id).first()
+    task = await get_task(db=db, task_id=task_id)
 
     if task is not None:
-        db.delete(task)
-        db.commit()
+        await db.delete(task)
+        await db.commit()
 
-    db.close()
+    return None
