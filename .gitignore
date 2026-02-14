@@ -24,12 +24,13 @@ htmlcov/
 .ruff_cache/
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
 *~
 .DS_Store
+.vscode/
+!.vscode/launch.json
 
 # uv
 .uv/
