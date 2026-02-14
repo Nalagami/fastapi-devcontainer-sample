@@ -1,6 +1,6 @@
 {
   "name": "FastAPI Development",
-  "dockerComposeFile": "../compose.yml",
+  "dockerComposeFile": "../compose.yaml",
   "service": "dev",
   "workspaceFolder": "/workspace",
   "features": {
@@ -20,6 +20,7 @@
         "ms-python.vscode-pylance",
         "charliermarsh.ruff",
         "ms-python.debugpy",
+        "ms-azuretools.vscode-docker",
         "ms-ceintl.vscode-language-pack-ja",
         "ms-python.mypy-type-checker",
         // Terraform extension
@@ -34,7 +35,7 @@
         "tamasfe.even-better-toml"
       ],
       "settings": {
-        "python.defaultInterpreterPath": "${containerEnv:VIRTUAL_ENV}/bin/python",
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
         "python.linting.enabled": true,
         "python.linting.ruffEnabled": true,
         "python.formatting.provider": "none",
@@ -106,6 +107,10 @@
     "8000": {
       "label": "FastAPI",
       "onAutoForward": "notify"
+    },
+    "5678": {
+      "label": "Debugpy",
+      "onAutoForward": "notify"
     }
   },
   "mounts": [
@@ -114,5 +119,5 @@
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws,target=/root/.aws,type=bind,consistency=cached"
   ],
   "postCreateCommand": "pre-commit install",
-  "postStartCommand": "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+  "postStartCommand": "/bin/bash"
 }
