@@ -35,7 +35,7 @@
         "tamasfe.even-better-toml"
       ],
       "settings": {
-        "python.defaultInterpreterPath": "${containerEnv:VIRTUAL_ENV}/bin/python",
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
         "python.linting.enabled": true,
         "python.linting.ruffEnabled": true,
         "python.formatting.provider": "none",
@@ -119,5 +119,5 @@
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws,target=/root/.aws,type=bind,consistency=cached"
   ],
   "postCreateCommand": "pre-commit install",
-  "postStartCommand": "python -m debugpy --listen 0.0.0.0:5678 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"
+  "postStartCommand": "/bin/bash"
 }
