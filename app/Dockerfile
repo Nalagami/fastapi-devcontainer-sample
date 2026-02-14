@@ -26,6 +26,9 @@ RUN pip install --no-cache-dir uv
 COPY ../pyproject.toml .
 RUN uv sync --extra dev
 
+RUN useradd -m -s /bin/bash vscode
+USER vscode
+
 # --- 本番環境用 ---
 FROM base AS production
 WORKDIR /app
