@@ -3,7 +3,10 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
+from app.routers import tasks
+
 app = FastAPI(title="FastAPI App", version="0.1.0")
+app.include_router(tasks.router)
 
 
 @app.get("/")
