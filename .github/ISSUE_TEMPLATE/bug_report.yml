@@ -1,0 +1,89 @@
+name: バグレポート
+description: バグや問題を報告する
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        バグレポートをご提出いただきありがとうございます。以下のフォームに必要な情報をご記入ください。
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: バグの説明
+      description: バグの内容を明確かつ簡潔に説明してください。
+      placeholder: 何が問題なのかを説明してください
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: 再現手順
+      description: バグを再現するための手順を記載してください。
+      placeholder: |
+        1. '...'に移動
+        2. '...'をクリック
+        3. '...'までスクロール
+        4. エラーを確認
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: 期待される動作
+      description: 期待される動作を明確かつ簡潔に説明してください。
+      placeholder: 本来どのように動作すべきかを説明してください
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: 実際の動作
+      description: 実際に発生した動作を説明してください。
+      placeholder: 実際に何が起きたかを説明してください
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: スクリーンショット
+      description: 該当する場合は、問題を説明するためのスクリーンショットを追加してください。
+      placeholder: スクリーンショットをドラッグ&ドロップしてください
+    validations:
+      required: false
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: OS
+      description: 使用しているOSを選択してください。
+      options:
+        - macOS
+        - Windows
+        - Linux
+        - その他
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: バージョン
+      description: 使用しているアプリケーションのバージョンを記載してください。
+      placeholder: "例: 1.0.0"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 追加情報
+      description: 問題に関する追加情報があれば記載してください。
+      placeholder: その他、参考になる情報があれば記載してください
+    validations:
+      required: false

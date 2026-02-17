@@ -1,0 +1,81 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":preserveSemverRanges"
+  ],
+  "timezone": "Asia/Tokyo",
+  "schedule": [
+    "after 10pm every weekday",
+    "before 5am every weekday",
+    "every weekend"
+  ],
+  "labels": ["dependencies"],
+  "rangeStrategy": "bump",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 5am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "Python本番依存関係のグループ化",
+      "matchManagers": ["pep621"],
+      "matchDepTypes": ["dependencies"],
+      "groupName": "Python本番依存関係",
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "deps"
+    },
+    {
+      "description": "Python開発依存関係のグループ化",
+      "matchManagers": ["pep621"],
+      "matchDepTypes": ["optional-dependencies"],
+      "groupName": "Python開発依存関係",
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "deps-dev",
+      "automerge": true,
+      "automergeType": "pr",
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "description": "GitHub Actionsのグループ化",
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions",
+      "semanticCommitType": "ci",
+      "automerge": true,
+      "automergeType": "pr",
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "description": "Dockerイメージの更新",
+      "matchManagers": ["dockerfile"],
+      "groupName": "Dockerイメージ",
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "docker"
+    },
+    {
+      "description": "メジャーバージョンアップデートの処理",
+      "matchUpdateTypes": ["major"],
+      "addLabels": ["major-update"],
+      "automerge": false
+    },
+    {
+      "description": "セキュリティアップデート",
+      "matchDatasources": ["pypi"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "addLabels": ["security"]
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security", "vulnerability"]
+  },
+  "prConcurrentLimit": 5,
+  "prCreation": "not-pending",
+  "prHourlyLimit": 2,
+  "reviewers": [],
+  "assignees": []
+}
