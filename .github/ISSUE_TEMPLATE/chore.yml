@@ -1,0 +1,62 @@
+name: 雑務チケット
+description: 雑務やメンテナンス作業の報告
+title: "[CHORE] "
+labels: ["chore"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        雑務チケットをご提出いただきありがとうございます。以下のフォームに必要な情報をご記入ください。
+
+  - type: textarea
+    id: task-description
+    attributes:
+      label: タスクの説明
+      description: 実施する雑務やメンテナンス作業の内容を記載してください。
+      placeholder: どのような作業を行いますか？
+    validations:
+      required: true
+
+  - type: dropdown
+    id: task-type
+    attributes:
+      label: タスクの種類
+      description: 雑務の種類を選択してください。
+      options:
+        - 依存関係の更新
+        - 設定ファイルの整理
+        - コードのクリーンアップ
+        - CI/CDの改善
+        - その他
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: 理由・背景
+      description: なぜこの作業が必要なのかを説明してください。
+      placeholder: この作業を行う理由を記載してください
+    validations:
+      required: false
+
+  - type: textarea
+    id: checklist
+    attributes:
+      label: チェックリスト
+      description: 実施する作業のチェックリストがあれば記載してください。
+      placeholder: |
+        - [ ] タスク1
+        - [ ] タスク2
+        - [ ] タスク3
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 追加情報
+      description: その他、参考になる情報があれば記載してください。
+      placeholder: 関連するissueやPRなど
+    validations:
+      required: false

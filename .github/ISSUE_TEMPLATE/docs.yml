@@ -1,0 +1,69 @@
+name: ドキュメント更新
+description: ドキュメントの追加や更新の提案
+title: "[DOCS] "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ドキュメント更新のご提案ありがとうございます。以下のフォームに必要な情報をご記入ください。
+
+  - type: textarea
+    id: docs-description
+    attributes:
+      label: 更新内容の説明
+      description: どのドキュメントをどのように更新するのかを記載してください。
+      placeholder: 更新するドキュメントと内容を説明してください
+    validations:
+      required: true
+
+  - type: dropdown
+    id: docs-type
+    attributes:
+      label: 更新の種類
+      description: ドキュメント更新の種類を選択してください。
+      options:
+        - 新規ドキュメントの追加
+        - 既存ドキュメントの修正
+        - 既存ドキュメントの改善
+        - ドキュメントの削除
+        - その他
+    validations:
+      required: true
+
+  - type: input
+    id: target-file
+    attributes:
+      label: 対象ファイル
+      description: 更新対象のファイルパスを記載してください。
+      placeholder: "例: README.md, docs/setup.md"
+    validations:
+      required: false
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: 更新の理由
+      description: なぜこのドキュメント更新が必要なのかを説明してください。
+      placeholder: |
+        現在のドキュメントの問題点や、追加が必要な情報を記載してください
+    validations:
+      required: false
+
+  - type: textarea
+    id: content-proposal
+    attributes:
+      label: 提案内容
+      description: 具体的な更新内容や追加したい内容があれば記載してください。
+      placeholder: 追加・修正したい内容を記載してください
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 追加情報
+      description: その他、参考になる情報があれば記載してください。
+      placeholder: 参考リンクなど
+    validations:
+      required: false

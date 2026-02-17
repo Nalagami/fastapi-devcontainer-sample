@@ -1,0 +1,66 @@
+name: 機能リクエスト
+description: 新機能や改善の提案
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        機能リクエストをご提出いただきありがとうございます。以下のフォームに必要な情報をご記入ください。
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: 機能の説明
+      description: 実装したい機能を明確かつ簡潔に説明してください。
+      placeholder: どのような機能を追加したいですか？
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 動機・背景
+      description: なぜこの機能が必要なのか、どのような問題を解決するのかを説明してください。
+      placeholder: この機能が必要な理由を説明してください
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: 提案する解決策
+      description: どのように実装すべきか、具体的な提案があれば記載してください。
+      placeholder: 実装方法の提案があれば記載してください
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 代替案
+      description: 検討した代替案があれば記載してください。
+      placeholder: 他に考えられる方法があれば記載してください
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先度
+      description: この機能の優先度を選択してください。
+      options:
+        - 高 - すぐに必要
+        - 中 - あると便利
+        - 低 - 将来的にあればよい
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 追加情報
+      description: その他、この機能リクエストに関連する情報があれば記載してください。
+      placeholder: 参考資料やリンクなど
+    validations:
+      required: false

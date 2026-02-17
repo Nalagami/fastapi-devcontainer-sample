@@ -1,0 +1,82 @@
+name: リファクタリング
+description: コードのリファクタリング提案
+title: "[REFACTOR] "
+labels: ["refactoring"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        リファクタリングのご提案ありがとうございます。以下のフォームに必要な情報をご記入ください。
+
+  - type: textarea
+    id: refactor-description
+    attributes:
+      label: リファクタリングの説明
+      description: どの部分をどのようにリファクタリングするのかを記載してください。
+      placeholder: リファクタリング対象と内容を説明してください
+    validations:
+      required: true
+
+  - type: input
+    id: target-location
+    attributes:
+      label: 対象箇所
+      description: リファクタリング対象のファイルパスや関数名を記載してください。
+      placeholder: "例: src/services/user.py:UserService"
+    validations:
+      required: false
+
+  - type: textarea
+    id: current-issues
+    attributes:
+      label: 現在の問題点
+      description: 現在のコードにどのような問題があるのかを説明してください。
+      placeholder: |
+        コードの重複、複雑性、可読性の問題など
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: 提案する改善策
+      description: どのようにリファクタリングすべきか、具体的な提案を記載してください。
+      placeholder: |
+        設計パターンの適用、関数の分割、クラスの再設計など
+    validations:
+      required: false
+
+  - type: dropdown
+    id: refactor-type
+    attributes:
+      label: リファクタリングの種類
+      description: リファクタリングの種類を選択してください。
+      options:
+        - コードの整理・クリーンアップ
+        - 設計パターンの適用
+        - 関数/メソッドの分割
+        - クラス構造の改善
+        - 命名の改善
+        - その他
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: 影響範囲
+      description: このリファクタリングが影響する範囲を選択してください。
+      options:
+        - label: 機能の動作に影響なし（内部実装のみ変更）
+        - label: テストの修正が必要
+        - label: APIの変更が伴う
+        - label: ドキュメントの更新が必要
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 追加情報
+      description: その他、参考になる情報があれば記載してください。
+      placeholder: 参考資料やコードサンプルなど
+    validations:
+      required: false
