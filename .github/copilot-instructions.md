@@ -1,147 +1,119 @@
 # GitHub Copilot Instructions
 
+このプロジェクトのコーディング指針と開発哲学を示します。
+
 ## プロジェクト概要
 
-Python 3.13とFastAPIを使用したWebアプリケーションです。SQLAlchemyとAlembicを使用したデータベース管理、型安全性を重視した開発を行っています。
+Python 3.13とFastAPIを使用したWebアプリケーションプロジェクトです。型安全性、パフォーマンス、保守性を重視した現代的なWeb開発を実践しています。
 
-## 技術スタック
+## 開発哲学
 
-- **言語**: Python 3.13
-- **Webフレームワーク**: FastAPI
-- **ORM**: SQLAlchemy 2.0+ (async)
-- **マイグレーション**: Alembic
-- **パッケージ管理**: uv
-- **Linter/Formatter**: Ruff
-- **型チェック**: mypy
-- **テスト**: pytest (pytest-asyncio, pytest-cov)
+### 1. パフォーマンス第一
 
-## プロジェクト構造
+**非同期処理を最優先**にすること。すべてのI/O操作（データベース、HTTP、ファイル、外部API）は必ず非同期で実装します。同期的なブロッキング処理は、システム全体のパフォーマンスを大幅に低下させるため絶対に避けてください。
 
-```
-app/
-├── main.py         # FastAPIアプリケーションのエントリーポイント
-├── models/         # SQLAlchemyモデル（データベーステーブル定義）
-├── schemas/        # Pydanticスキーマ（リクエスト/レスポンス型）
-├── crud/           # CRUD操作（データベース操作ロジック）
-└── routers/        # FastAPIルーター（エンドポイント定義）
-```
+### 2. 型安全性の徹底
 
-## コーディング規約
+すべての関数・メソッドに型ヒントを付け、静的型チェックを通過するコードを書きます。型システムを活用することで、実行前にバグを発見し、コードの意図を明確にします。
 
-### 型ヒント
+### 3. シンプルさと明確さ
 
-- **必須**: すべての関数・メソッドに型ヒントを付けること
-- 引数、戻り値、変数には明示的に型を指定する
-- Python 3.13のモダンな型記法を使用（`list[str]`、`dict[str, int]`など）
+- コードは読みやすく、理解しやすいものにする
+- 過度な抽象化や早すぎる最適化を避ける
+- 必要最小限の変更に留める（要求されていない機能追加やリファクタリングをしない）
+- docstringで関数の目的を明確に記述する
 
-```python
-# Good
-async def get_task(task_id: int) -> Task | None:
-    """タスクをIDで取得する。"""
-    return await db.get(Task, task_id)
+### 4. レイヤー分離
 
-# Bad（型ヒントがない）
-async def get_task(task_id):
-    return await db.get(Task, task_id)
-```
+責務を明確に分けた設計を維持します：
+- **ルーター層**: HTTPリクエスト/レスポンスの処理
+- **ビジネスロジック層**: データ操作とビジネスルール
+- **データ層**: データベーススキーマとモデル定義
+- **スキーマ層**: 入出力の型定義
 
-### 非同期処理
+### 5. テスト駆動
 
-- FastAPIのエンドポイントとデータベース操作には `async/await` を使用
-- I/O操作は可能な限り非同期で実装する
-- SQLAlchemyは AsyncSession を使用
+新しい機能やバグ修正には必ずテストを追加します。ユニットテストとインテグレーションテストを適切に使い分け、高いテストカバレッジを維持します。
 
-```python
-# Good
-@app.get("/tasks/{task_id}")
-async def read_task(task_id: int, session: AsyncSession = Depends(get_session)) -> Task:
-    return await crud.get_task(session, task_id)
+### 6. セキュリティ意識
 
-# Bad（同期処理）
-@app.get("/tasks/{task_id}")
-def read_task(task_id: int):
-    return crud.get_task(task_id)
-```
+- 機密情報をハードコーディングしない（環境変数を使用）
+- SQLインジェクション、XSS等の脆弱性を作り込まない
+- 入力値は必ずバリデーションする
+- 適切なHTTPステータスコードとエラーメッセージを返す
 
-### Docstring
+## コーディング原則
 
-- すべての関数・クラスに日本語のdocstringを記述
-- 1行の簡潔な説明で十分（詳細な説明が必要な場合のみ複数行）
+### 品質基準
 
-```python
-def calculate_total(items: list[int]) -> int:
-    """アイテムの合計を計算する。"""
-    return sum(items)
-```
+すべてのコードは以下の基準を満たす必要があります：
+- 型チェック（mypy）が通る
+- Linter（Ruff）が通る
+- フォーマット（Ruff）が適用されている
+- テストが通る
+- セキュリティ上の問題がない
 
-### インポート順序
+### 言語とツール
 
-Ruffの設定により自動的に整理されます：
-1. 標準ライブラリ
-2. サードパーティライブラリ
-3. ファーストパーティ（app）
-
-### コードスタイル
-
-- 行の長さ: 最大100文字（Ruff設定）
-- Ruffによる自動フォーマットに従う
-- `uv task fmt` でフォーマット実行
-
-## ベストプラクティス
-
-### FastAPI
-
-- ルーター（routers/）でエンドポイントを定義
-- ビジネスロジックはCRUD層（crud/）に実装
-- リクエスト/レスポンスの型はPydanticスキーマ（schemas/）で定義
-- データベースモデルはmodels/に配置
-
-### データベース
-
-- モデル定義には `DeclarativeBase` を継承したベースクラスを使用
-- マイグレーションはAlembicで管理（`alembic revision --autogenerate`）
-- 本番環境では自動マイグレーション（起動時の`upgrade head`）を実行
-
-### エラーハンドリング
-
-- FastAPIの `HTTPException` を使用
-- 適切なステータスコードを返す（404, 400, 500など）
-
-```python
-from fastapi import HTTPException
-
-if not task:
-    raise HTTPException(status_code=404, detail="Task not found")
-```
-
-### テスト
-
-- `tests/unit/`: ユニットテスト（個別の関数・クラス）
-- `tests/integration/`: インテグレーションテスト（エンドポイント）
-- FastAPIの `TestClient` を使用してエンドポイントをテスト
-- 非同期テストには `@pytest.mark.asyncio` を使用（`asyncio_mode = "auto"`設定済み）
-
-## 禁止事項
-
-- 型ヒントなしのコードを書かないこと（mypy strict設定）
-- FastAPIエンドポイントでのデフォルト引数での関数呼び出し（B008）は許可（FastAPIの標準パターン）
-- `print()`デバッグは本番コードに残さない（開発時のみ使用）
-- 同期的なブロッキング処理（ファイルI/O、HTTPリクエスト）は避ける
-
-## タスク実行コマンド
-
-開発時に使用する主なコマンド：
-
-```bash
-uv task fmt          # コード自動フォーマット
-uv task lint         # リント実行（自動修正）
-uv task type         # 型チェック
-uv task test         # テスト実行
-uv task check        # すべてのチェック実行
-```
-
-## その他
-
-- DevContainer環境での開発を推奨
+モダンなPython開発のベストプラクティスに従います：
 - Python 3.13の新機能を積極的に活用
-- セキュリティを考慮したコード（SQLインジェクション、XSSなど）
+- 非同期処理（async/await）を標準とする
+- 型安全なコードを書く（mypy strict設定）
+- 自動フォーマッタとリンターに従う
+
+### コミュニケーション
+
+- コードでコミュニケーションする（変数名、関数名を明確に）
+- docstringで関数の目的を説明する（日本語）
+- 複雑なロジックにはコメントを追加する
+- コミットメッセージは変更の意図を明確に示す
+
+## プロジェクト構成
+
+レイヤードアーキテクチャを採用し、各層の責務を明確に分離しています。詳細な構造やコーディング規約は、以下のファイルを参照してください：
+
+- **Python関連**: `.github/instructions/python.instructions.md`
+- **Docker関連**: `.github/instructions/docker.instructions.md`
+- **その他全般**: `.github/instructions/general.instructions.md`
+
+## 開発プロセス
+
+### 変更を加える前に
+
+1. 関連するコードを読み、理解する
+2. 既存のパターンやアーキテクチャに従う
+3. 必要最小限の変更で目的を達成する
+
+### コードを書くとき
+
+1. 型ヒントを必ず付ける
+2. I/O操作は非同期で実装する
+3. docstringを記述する
+4. テストを追加・更新する
+5. セキュリティを考慮する
+
+### コミット前に
+
+1. 自動フォーマットを実行（`uv task fmt`）
+2. Linterを実行（`uv task lint-check`）
+3. 型チェックを実行（`uv task type`）
+4. テストを実行（`uv task test`）
+5. または一括チェック（`uv task check`）
+
+## 避けるべきパターン
+
+以下のパターンは品質、パフォーマンス、セキュリティの観点から禁止されています：
+
+- ❌ 同期的なI/O操作（パフォーマンス劣化の主要因）
+- ❌ 型ヒントのないコード
+- ❌ ハードコーディングされた機密情報
+- ❌ テストのない新機能・バグ修正
+- ❌ デバッグコード（print文など）を本番に残す
+- ❌ 過度な抽象化や早すぎる最適化
+- ❌ 要求されていない機能追加やリファクタリング
+
+## まとめ
+
+このプロジェクトでは、パフォーマンス、型安全性、保守性を重視した開発を行っています。モダンなPythonのベストプラクティスに従い、シンプルで理解しやすいコードを書くことを心がけてください。
+
+詳細なコーディング規約や技術的なガイドラインは、各種instructionsファイルを参照してください。
