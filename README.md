@@ -97,6 +97,23 @@ uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 サーバーは `http://localhost:8000` で起動します。
 
+### ログレベルの設定
+
+環境変数 `LOG_LEVEL` でログレベルを制御できます。
+
+```bash
+# DEBUGレベルで起動（詳細なログ）
+LOG_LEVEL=DEBUG python app/main.py
+
+# INFOレベルで起動（デフォルト）
+LOG_LEVEL=INFO python app/main.py
+
+# WARNINGレベルで起動（警告以上のみ）
+LOG_LEVEL=WARNING python app/main.py
+```
+
+利用可能なログレベル: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
+
 ### テスト実行
 
 ```bash
@@ -138,7 +155,14 @@ uv task check
 .
 ├── Dockerfile                      # マルチステージビルド
 ├── compose.yml                     # Docker Compose 設定
-├── main.py                         # メインアプリケーション
+├── app/
+│   ├── main.py                     # メインアプリケーション
+│   ├── core/                       # アプリケーション基盤
+│   │   └── logging.py              # ログ設定
+│   ├── routers/                    # APIルーター
+│   ├── models/                     # データベースモデル
+│   ├── schemas/                    # Pydanticスキーマ
+│   └── crud/                       # データベース操作
 ├── tests/
 │   ├── conftest.py                # 共通テスト設定（TestClient fixture）
 │   ├── unit/                       # ユニットテスト
