@@ -1,6 +1,8 @@
 """FastAPI main application."""
 
 import asyncio
+import logging
+import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -10,22 +12,28 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 from alembic import command
+from app.core.logging import setup_logging
 from app.routers import tasks
 
 # Get the project root directory (parent of app directory)
 PROJECT_ROOT = Path(__file__).parent.parent
 
+# Set up logging
+log_level = os.getenv("LOG_LEVEL", "INFO")
+setup_logging(level=log_level)
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     """Startup event."""
-    print("Starting up FastAPI application...")
+    logger.info("Starting up FastAPI application...")
     alembic_ini_path = PROJECT_ROOT / "alembic.ini"
     alembic_cfg = Config(str(alembic_ini_path))
     await asyncio.to_thread(command.upgrade, alembic_cfg, "head")
-    print("Database migrations applied successfully.")
+    logger.info("Database migrations applied successfully.")
     yield
-    print("Shutting down FastAPI application...")
+    logger.info("Shutting down FastAPI application...")
 
 
 app = FastAPI(title="FastAPI App", version="0.1.0", lifespan=lifespan)
