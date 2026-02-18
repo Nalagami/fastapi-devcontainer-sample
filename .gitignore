@@ -29,7 +29,7 @@ htmlcov/
 *.swo
 *~
 .DS_Store
-.vscode/
+.vscode/*
 !.vscode/launch.json
 
 # uv
