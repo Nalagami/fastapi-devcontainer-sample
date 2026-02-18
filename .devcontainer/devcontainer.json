@@ -78,28 +78,6 @@
         },
         "python.linting.mypyEnabled": true,
         "python.linting.mypyArgs": ["--strict"]
-      },
-      "launch": {
-        "version": "1.8.20",
-        "configurations": [
-          {
-            "name": "Python: FastAPI",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvicorn",
-            "args": [
-              "app.main:app",
-              "--reload",
-              "--host",
-              "0.0.0.0",
-              "--port",
-              "8000"
-            ],
-            "jinja": true,
-            "justMyCode": false,
-            "console": "integratedTerminal"
-          }
-        ]
       }
     }
   },
@@ -118,6 +96,5 @@
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached",
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached"
   ],
-  "postCreateCommand": "pre-commit install",
-  "postStartCommand": "/bin/bash"
+  "postCreateCommand": "uv run pre-commit install"
 }
