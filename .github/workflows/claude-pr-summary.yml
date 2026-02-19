@@ -1,0 +1,45 @@
+name: Claude PR Summary
+
+on:
+  pull_request:
+    types: [opened]
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          use_bedrock: true
+          claude_args: "--model global.anthropic.claude-sonnet-4-6 --max-turns 10"
+          github_token: ${{ steps.app-token.outputs.token }}
+          prompt: |
+            このPRの変更内容を日本語で簡潔にコメントしてください：
+            1. 変更されたアーキテクチャ層（routers/crud/models/schemas/core）
+            2. 非同期パターンが正しく使われているか
+            3. 型ヒントが適切か
+            4. テストカバレッジの状況
+            PR説明文の補足として投稿してください。

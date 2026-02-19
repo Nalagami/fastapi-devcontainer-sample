@@ -1,0 +1,51 @@
+name: Claude Fix CI
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+
+jobs:
+  claude-fix:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          use_bedrock: true
+          claude_args: "--model global.anthropic.claude-sonnet-4-6 --max-turns 10"
+          github_token: ${{ steps.app-token.outputs.token }}
+          prompt: |
+            CIパイプラインが失敗しました。以下を実施してください：
+            1. 失敗したCIステップ（format/lint/type/test）を分析する
+            2. ruffフォーマットエラーを `uv task fmt` で修正
+            3. ruff lintエラーを `uv task lint` で修正
+            4. mypy型エラーを `app/` 内で修正
+            5. テストファイルは、テスト自体が誤っている場合のみ修正
+            6. .github/instructions/python.instructions.md の規約に従う
+            7. docstringは日本語で記述
+            8. 必要最小限の変更のみコミット
