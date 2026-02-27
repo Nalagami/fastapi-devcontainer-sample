@@ -1,5 +1,5 @@
 # --- 共通ステージ ---
-FROM python:3.13-bookworm AS base
+FROM python:3.14-bookworm AS base
 
 # .pycファイルを生成しない、標準出力をバッファリングしない
 ENV PYTHONDONTWRITEBYTECODE=1 \
