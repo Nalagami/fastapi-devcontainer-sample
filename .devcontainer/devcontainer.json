@@ -7,7 +7,7 @@
     // Enable Docker CLI inside the container
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
     // Enable Claude Code feature
-    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers/features/node:2": {},
     "ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
   },
   "customizations": {
